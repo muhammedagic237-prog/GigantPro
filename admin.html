@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Gigant Admin Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="icon" href="logos/gigant-mali-logo.png"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',sans-serif;background:#f1f5f9;color:#1e293b}
+    .sidebar{width:240px;background:#0f172a;min-height:100vh;position:fixed;left:0;top:0;padding:20px 0;color:#94a3b8}
+    .sidebar-link{display:flex;align-items:center;gap:10px;padding:12px 20px;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;border-left:3px solid transparent}
+    .sidebar-link:hover,.sidebar-link.active{background:rgba(255,255,255,0.05);color:#fff;border-left-color:#3b82f6}
+    .main{margin-left:240px;padding:24px}
+    .card{background:#fff;border-radius:14px;border:1px solid #e2e8f0;padding:24px;margin-bottom:16px}
+    .input{width:100%;padding:10px 14px;border:2px solid #e2e8f0;border-radius:10px;font-size:14px;font-family:Inter;outline:none;transition:border 0.3s}
+    .input:focus{border-color:#3b82f6}
+    .btn{padding:10px 24px;border-radius:10px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter;transition:all 0.2s}
+    .btn-blue{background:#3b82f6;color:#fff}.btn-blue:hover{background:#2563eb}
+    .btn-red{background:#ef4444;color:#fff}.btn-red:hover{background:#dc2626}
+    .btn-green{background:#22c55e;color:#fff}.btn-green:hover{background:#16a34a}
+    .btn-gray{background:#f1f5f9;color:#64748b}.btn-gray:hover{background:#e2e8f0}
+    .table{width:100%;border-collapse:collapse}
+    .table th{text-align:left;padding:12px 16px;font-size:11px;font-weight:700;color:#64748b;letter-spacing:1px;text-transform:uppercase;border-bottom:2px solid #e2e8f0;background:#f8fafc}
+    .table td{padding:12px 16px;border-bottom:1px solid #f1f5f9;font-size:13px;vertical-align:middle}
+    .table tr:hover{background:#f8fafc}
+    .badge-s{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+    .badge-active{background:#dcfce7;color:#16a34a}
+    .badge-sold{background:#fee2e2;color:#dc2626}
+    .badge-rent{background:#dbeafe;color:#2563eb}
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;display:flex;align-items:center;justify-content:center}
+    .modal{background:#fff;border-radius:20px;padding:32px;width:90%;max-width:550px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+    @media(max-width:768px){.sidebar{display:none}.main{margin-left:0}}
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div style="padding:0 20px 20px;border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:16px">
+      <img src="logos/GIGANT-NEK-LOGO-WEB.png" alt="Gigant" style="height:30px;filter:brightness(2);margin-bottom:8px"/>
+      <div style="font-size:11px;color:#475569;font-weight:600;letter-spacing:1px">ADMIN PANEL</div>
+    </div>
+    <div class="sidebar-link active" onclick="showTab('properties')">📋 Nekretnine</div>
+    <div class="sidebar-link" onclick="showTab('add')">➕ Dodaj Novu</div>
+    <div class="sidebar-link" onclick="showTab('stats')">📊 Statistika</div>
+    <div style="position:absolute;bottom:20px;left:0;right:0;padding:0 20px">
+      <a href="index.html" class="sidebar-link" style="border:1px solid rgba(255,255,255,0.06);border-radius:10px;justify-content:center">🌐 Vidi Stranicu</a>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <!-- Header -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+      <div>
+        <h1 style="font-size:22px;font-weight:800">Upravljanje Nekretninama</h1>
+        <p style="font-size:13px;color:#64748b;margin-top:4px" id="subtitle">Ukupno nekretnina: <span id="total-count">0</span></p>
+      </div>
+      <button class="btn btn-blue" onclick="showTab('add')" style="display:flex;align-items:center;gap:6px">
+        <span style="font-size:16px">+</span> Dodaj Nekretninu
+      </button>
+    </div>
+
+    <!-- PROPERTIES TAB -->
+    <div id="tab-properties">
+      <div class="card" style="padding:0;overflow:hidden">
+        <table class="table" id="prop-table">
+          <thead>
+            <tr>
+              <th>Slika</th>
+              <th>Naziv</th>
+              <th>Tip</th>
+              <th>Lokacija</th>
+              <th>Cijena (KM)</th>
+              <th>Status</th>
+              <th>Akcije</th>
+            </tr>
+          </thead>
+          <tbody id="prop-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ADD/EDIT TAB -->
+    <div id="tab-add" style="display:none">
+      <div class="card" style="max-width:600px">
+        <h3 style="font-size:16px;font-weight:700;margin-bottom:20px" id="form-title">Dodaj Novu Nekretninu</h3>
+        <form onsubmit="event.preventDefault();saveProperty();" id="prop-form">
+          <input type="hidden" id="edit-id"/>
+          <div style="margin-bottom:14px">
+            <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:5px">Naziv</label>
+            <input class="input" id="f-title" placeholder="npr. Trosoban stan Grbavica" required/>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+            <div>
+              <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:5px">Tip</label>
+              <select class="input" id="f-type" required>
+                <option value="stan">Stan</option>
+                <option value="kuca">Kuća</option>
+                <option value="poslovni">Poslovni prostor</option>
+                <option value="zemljiste">Zemljište</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:5px">Lokacija</label>
+              <input class="input" id="f-location" placeholder="Sarajevo" required/>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px">
+            <div>
+              <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:5px">Cijena (KM)</label>
+              <input class="input" type="number" id="f-price" placeholder="250000" required/>
+            </div>
+            <div>
+              <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:5px">Površina (m²)</label>
+              <input class="input" type="number" id="f-size" placeholder="75" required/>
+            </div>
+            <div>
+              <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:5px">Sobe</label>
+              <input class="input" type="number" id="f-rooms" placeholder="3" required/>
+            </div>
+          </div>
+          <div style="margin-bottom:14px">
+            <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:5px">Status</label>
+            <select class="input" id="f-status">
+              <option value="sale">Na prodaju</option>
+              <option value="rent">Iznajmljivanje</option>
+              <option value="sold">Prodano</option>
+            </select>
+          </div>
+          <div style="margin-bottom:14px">
+            <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:5px">Opis</label>
+            <textarea class="input" id="f-desc" rows="3" placeholder="Kratki opis nekretnine..." style="resize:vertical"></textarea>
+          </div>
+          <div style="margin-bottom:20px">
+            <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:5px">Slika (URL ili odaberi datoteku)</label>
+            <input class="input" id="f-img" placeholder="properties/slika.jpg" style="margin-bottom:8px"/>
+            <input type="file" accept="image/*" onchange="handleImageUpload(event)" style="font-size:13px"/>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button type="submit" class="btn btn-blue" style="flex:1">Spremi</button>
+            <button type="button" class="btn btn-gray" onclick="showTab('properties');resetForm()">Odustani</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- STATS TAB -->
+    <div id="tab-stats" style="display:none">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px" id="stats-cards">
+        <div class="card" style="text-align:center"><div style="font-size:32px;font-weight:800;color:#3b82f6" id="s-total">0</div><div style="font-size:12px;color:#64748b;margin-top:4px">Ukupno</div></div>
+        <div class="card" style="text-align:center"><div style="font-size:32px;font-weight:800;color:#22c55e" id="s-active">0</div><div style="font-size:12px;color:#64748b;margin-top:4px">Aktivne</div></div>
+        <div class="card" style="text-align:center"><div style="font-size:32px;font-weight:800;color:#ef4444" id="s-sold">0</div><div style="font-size:12px;color:#64748b;margin-top:4px">Prodane</div></div>
+        <div class="card" style="text-align:center"><div style="font-size:32px;font-weight:800;color:#f59e0b" id="s-value">0</div><div style="font-size:12px;color:#64748b;margin-top:4px">Ukupna Vrijednost (KM)</div></div>
+      </div>
+      <div class="card">
+        <h3 style="font-size:15px;font-weight:700;margin-bottom:16px">Po Tipu</h3>
+        <div id="stats-by-type"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DELETE CONFIRM MODAL -->
+  <div id="delete-modal" class="modal-overlay" style="display:none">
+    <div class="modal" style="max-width:400px;text-align:center">
+      <div style="font-size:48px;margin-bottom:12px">⚠️</div>
+      <h3 style="font-size:18px;font-weight:700;margin-bottom:8px">Obrisati nekretninu?</h3>
+      <p style="font-size:13px;color:#64748b;margin-bottom:24px">Ova akcija se ne može poništiti.</p>
+      <div style="display:flex;gap:10px;justify-content:center">
+        <button class="btn btn-red" onclick="confirmDelete()">Obriši</button>
+        <button class="btn btn-gray" onclick="closeDeleteModal()">Odustani</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+// ── DATA ──
+const DEFAULT_PROPERTIES = [
+  {id:1,title:'Luksuzni stan Čengić Vila',type:'stan',location:'Sarajevo',price:285000,size:95,rooms:3,status:'sale',img:'properties/img-1756326904-c0a1621eb7fa-740x560.jpg',desc:'Potpuno renoviran, centralno grijanje, parking'},
+  {id:2,title:'Kuća sa dvorištem Vogošća',type:'kuca',location:'Vogošća',price:420000,size:180,rooms:5,status:'sale',img:'properties/img-1756326908-488486273698-740x560.jpg',desc:'Velika kuća sa garažom i dvorištem'},
+  {id:3,title:'Dvosoban stan Grbavica',type:'stan',location:'Sarajevo',price:195000,size:62,rooms:2,status:'sale',img:'properties/img-1756326911-3a2512691eea-740x560.jpg',desc:'Sunčan stan sa balkonom, blizina tramvaja'},
+  {id:4,title:'Poslovni prostor Centar',type:'poslovni',location:'Sarajevo',price:350000,size:120,rooms:4,status:'sale',img:'properties/img-1756326911-a0501ccb218d-740x560.jpg',desc:'Prizemlje, velika izložba, parking'},
+  {id:5,title:'Trosoban stan Alipašino',type:'stan',location:'Sarajevo',price:230000,size:78,rooms:3,status:'sale',img:'properties/img-1756326909-0730df7d524b-740x560.jpg',desc:'Renoviran, novi pod, klima'},
+  {id:6,title:'Vila sa bazenom Ilidža',type:'kuca',location:'Ilidža',price:890000,size:300,rooms:7,status:'sale',img:'properties/img-1764258062-10c909c512b6-740x560.jpeg',desc:'Luksuzna vila sa bazenom i vrtom'},
+  {id:7,title:'Garsonijera Marijin Dvor',type:'stan',location:'Sarajevo',price:151000,size:38,rooms:1,status:'sale',img:'properties/img-1764258058-dd837259ac04-740x560.jpeg',desc:'Idealna za iznajmljivanje, centar grada'},
+  {id:8,title:'Stan u novogradnji Stup',type:'stan',location:'Sarajevo',price:265000,size:72,rooms:2,status:'sale',img:'properties/img-1764258054-6a4f9b757633-740x560.jpeg',desc:'Novogradnja, lift, garaža'},
+  {id:9,title:'Kuća Hadžići',type:'kuca',location:'Hadžići',price:320000,size:200,rooms:5,status:'sale',img:'properties/WhatsApp-Image-2026-02-24-at-13.32.55-1-740x560.jpeg',desc:'Mirna lokacija, veliki plac'},
+  {id:10,title:'Poslovni prostor Dobrinja',type:'poslovni',location:'Sarajevo',price:180000,size:85,rooms:2,status:'sale',img:'properties/WhatsApp-Image-2026-02-24-at-13.32.56-1-740x560.jpeg',desc:'Uz glavnu cestu, odličan pristup'},
+  {id:11,title:'Penthouse Skenderija',type:'stan',location:'Sarajevo',price:580000,size:140,rooms:4,status:'sale',img:'properties/BE5BA919-424E-4FA5-932F-0F60C7203EB0-740x560.jpeg',desc:'Pogled na grad, terasa 40m2'},
+  {id:12,title:'Rezidencija Bjelašnica',type:'kuca',location:'Bjelašnica',price:1400000,size:400,rooms:8,status:'sale',img:'properties/5A6202C3-E6E4-4DAC-A571-DF192BBC9D54-740x560.jpeg',desc:'Ski-in/ski-out, spa, sauna'}
+];
+
+function getProperties(){try{const d=localStorage.getItem('gigant_properties');if(d)return JSON.parse(d);}catch(e){}return DEFAULT_PROPERTIES;}
+function savePropertiesToStorage(p){localStorage.setItem('gigant_properties',JSON.stringify(p));}
+let properties=getProperties();
+let deleteId=null;
+
+// ── TABS ──
+function showTab(t){
+  document.getElementById('tab-properties').style.display=t==='properties'?'block':'none';
+  document.getElementById('tab-add').style.display=t==='add'?'block':'none';
+  document.getElementById('tab-stats').style.display=t==='stats'?'block':'none';
+  document.querySelectorAll('.sidebar-link').forEach((l,i)=>{l.classList.toggle('active',i===['properties','add','stats'].indexOf(t));});
+  if(t==='properties')renderTable();
+  if(t==='stats')renderStats();
+}
+
+// ── TABLE ──
+function renderTable(){
+  const types={stan:'Stan',kuca:'Kuća',poslovni:'Poslovni',zemljiste:'Zemljište'};
+  const statuses={sale:['Na prodaju','badge-active'],rent:['Iznajmljivanje','badge-rent'],sold:['Prodano','badge-sold']};
+  document.getElementById('total-count').textContent=properties.length;
+  document.getElementById('prop-tbody').innerHTML=properties.map(p=>{
+    const [sLabel,sClass]=statuses[p.status]||['—',''];
+    return `<tr>
+      <td><img src="${p.img}" style="width:60px;height:40px;object-fit:cover;border-radius:6px" onerror="this.style.background='#f1f5f9';this.alt='No img'"/></td>
+      <td style="font-weight:600">${p.title}</td>
+      <td>${types[p.type]||p.type}</td>
+      <td>${p.location}</td>
+      <td style="font-weight:700">${p.price.toLocaleString('de-DE')}</td>
+      <td><span class="badge-s ${sClass}">${sLabel}</span></td>
+      <td>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-gray" onclick="editProperty(${p.id})" style="padding:6px 12px;font-size:11px">✏️</button>
+          <button class="btn btn-gray" onclick="toggleSold(${p.id})" style="padding:6px 12px;font-size:11px">${p.status==='sold'?'↩️':'✅'}</button>
+          <button class="btn btn-gray" onclick="openDeleteModal(${p.id})" style="padding:6px 12px;font-size:11px;color:#ef4444">🗑️</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ── EDIT ──
+function editProperty(id){
+  const p=properties.find(x=>x.id===id);if(!p)return;
+  document.getElementById('edit-id').value=id;
+  document.getElementById('f-title').value=p.title;
+  document.getElementById('f-type').value=p.type;
+  document.getElementById('f-location').value=p.location;
+  document.getElementById('f-price').value=p.price;
+  document.getElementById('f-size').value=p.size;
+  document.getElementById('f-rooms').value=p.rooms;
+  document.getElementById('f-status').value=p.status;
+  document.getElementById('f-desc').value=p.desc||'';
+  document.getElementById('f-img').value=p.img;
+  document.getElementById('form-title').textContent='Uredi Nekretninu';
+  showTab('add');
+}
+
+// ── SAVE ──
+function saveProperty(){
+  const editId=document.getElementById('edit-id').value;
+  const data={
+    id:editId?parseInt(editId):Date.now(),
+    title:document.getElementById('f-title').value,
+    type:document.getElementById('f-type').value,
+    location:document.getElementById('f-location').value,
+    price:parseInt(document.getElementById('f-price').value),
+    size:parseInt(document.getElementById('f-size').value),
+    rooms:parseInt(document.getElementById('f-rooms').value),
+    status:document.getElementById('f-status').value,
+    desc:document.getElementById('f-desc').value,
+    img:document.getElementById('f-img').value
+  };
+  if(editId){properties=properties.map(p=>p.id===parseInt(editId)?data:p);}
+  else{properties.push(data);}
+  savePropertiesToStorage(properties);
+  resetForm();showTab('properties');
+}
+
+// ── TOGGLE SOLD ──
+function toggleSold(id){
+  properties=properties.map(p=>p.id===id?{...p,status:p.status==='sold'?'sale':'sold'}:p);
+  savePropertiesToStorage(properties);renderTable();
+}
+
+// ── DELETE ──
+function openDeleteModal(id){deleteId=id;document.getElementById('delete-modal').style.display='flex';}
+function closeDeleteModal(){deleteId=null;document.getElementById('delete-modal').style.display='none';}
+function confirmDelete(){
+  properties=properties.filter(p=>p.id!==deleteId);
+  savePropertiesToStorage(properties);closeDeleteModal();renderTable();
+}
+
+// ── IMAGE UPLOAD ──
+function handleImageUpload(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{document.getElementById('f-img').value=reader.result;};
+  reader.readAsDataURL(file);
+}
+
+// ── RESET FORM ──
+function resetForm(){
+  document.getElementById('prop-form').reset();
+  document.getElementById('edit-id').value='';
+  document.getElementById('form-title').textContent='Dodaj Novu Nekretninu';
+}
+
+// ── STATS ──
+function renderStats(){
+  const active=properties.filter(p=>p.status!=='sold');
+  const sold=properties.filter(p=>p.status==='sold');
+  document.getElementById('s-total').textContent=properties.length;
+  document.getElementById('s-active').textContent=active.length;
+  document.getElementById('s-sold').textContent=sold.length;
+  document.getElementById('s-value').textContent=active.reduce((s,p)=>s+p.price,0).toLocaleString('de-DE');
+
+  const types={stan:0,kuca:0,poslovni:0,zemljiste:0};
+  properties.forEach(p=>{types[p.type]=(types[p.type]||0)+1;});
+  const labels={stan:'Stanovi',kuca:'Kuće',poslovni:'Poslovni',zemljiste:'Zemljišta'};
+  const maxCount=Math.max(...Object.values(types),1);
+  document.getElementById('stats-by-type').innerHTML=Object.entries(types).map(([k,v])=>`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+      <div style="width:80px;font-size:13px;font-weight:600;color:#334155">${labels[k]||k}</div>
+      <div style="flex:1;height:28px;background:#f1f5f9;border-radius:8px;overflow:hidden">
+        <div style="height:100%;width:${(v/maxCount)*100}%;background:linear-gradient(90deg,#3b82f6,#2563eb);border-radius:8px;display:flex;align-items:center;padding-left:10px;font-size:11px;color:#fff;font-weight:600;transition:width 0.6s">${v}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Init
+renderTable();
+</script>
+</body>
+</html>
