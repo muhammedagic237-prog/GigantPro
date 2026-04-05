@@ -428,6 +428,13 @@
   </div>
 </footer>
 
+<!-- PROPERTY DETAIL MODAL -->
+<div id="detail-modal" style="display:none;position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,0.8);backdrop-filter:blur(12px);align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto" onclick="if(event.target===this)closeDetailModal()">
+  <div id="detail-modal-content" style="background:#fff;border-radius:20px;width:100%;max-width:800px;overflow:hidden;box-shadow:0 25px 80px rgba(0,0,0,0.5),0 0 60px rgba(59,130,246,0.15);transform:scale(0.95) translateY(20px);transition:transform 0.4s cubic-bezier(0.16,1,0.3,1);margin-bottom:40px">
+    <div id="detail-modal-body"></div>
+  </div>
+</div>
+
 <!-- SECRET ADMIN ACCESS: Ctrl+Shift+G -->
 <div id="admin-gate">
   <div style="background:#fff;border-radius:24px;padding:40px;width:90%;max-width:400px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
@@ -507,7 +514,7 @@ function filterProperties(){
 function renderProperties(list){
   const filtered=list||(currentFilter==='all'?properties.filter(p=>p.status!=='sold'):properties.filter(p=>p.type===currentFilter&&p.status!=='sold'));
   document.getElementById('properties-grid').innerHTML=filtered.map((p,i)=>`
-    <div class="prop-card" style="animation:fadeUp 0.6s ease-out ${i*0.08}s both">
+    <div class="prop-card" onclick="openPropertyDetail(${p.id})" style="animation:fadeUp 0.6s ease-out ${i*0.08}s both">
       <div style="position:relative;overflow:hidden;height:240px">
         <img src="${p.img}" alt="${p.title}" class="prop-img" style="width:100%;height:100%;object-fit:cover"/>
         <div class="prop-glow"></div>
@@ -515,6 +522,9 @@ function renderProperties(list){
         <div style="position:absolute;bottom:16px;right:16px;background:rgba(0,0,0,0.6);backdrop-filter:blur(10px);padding:6px 14px;border-radius:10px">
           <span style="font-size:11px;color:rgba(255,255,255,0.6)">📐</span>
           <span style="font-size:12px;color:#fff;font-weight:600;margin-left:4px">${p.size} m²</span>
+        </div>
+        <div class="view-overlay" style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(30,64,175,0.85));display:flex;align-items:flex-end;justify-content:center;padding-bottom:20px;opacity:0;transition:opacity 0.4s">
+          <span style="color:#fff;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:10px 20px;background:rgba(255,255,255,0.15);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);border-radius:10px">Pogledaj Detalje →</span>
         </div>
       </div>
       <div style="padding:22px">
@@ -529,6 +539,106 @@ function renderProperties(list){
     </div>
   `).join('');
   if(filtered.length===0)document.getElementById('properties-grid').innerHTML='<div style="text-align:center;padding:60px;color:#94a3b8;grid-column:1/-1;font-size:15px">Nema nekretnina za prikaz</div>';
+  // Add hover reveal
+  document.querySelectorAll('.prop-card').forEach(c=>{
+    c.addEventListener('mouseenter',()=>{const o=c.querySelector('.view-overlay');if(o)o.style.opacity='1';});
+    c.addEventListener('mouseleave',()=>{const o=c.querySelector('.view-overlay');if(o)o.style.opacity='0';});
+  });
+}
+
+// ── PROPERTY DETAIL MODAL ──
+function openPropertyDetail(id){
+  const p=properties.find(x=>x.id===id);if(!p)return;
+  const typeLabels={stan:'Stan',kuca:'Kuća',poslovni:'Poslovni prostor',zemljiste:'Zemljište'};
+  const pricePerM2=Math.round(p.price/p.size);
+  const statusLabel=p.status==='rent'?'Iznajmljivanje':p.status==='sold'?'Prodano':'Na prodaju';
+  const statusColor=p.status==='rent'?'#16a34a':p.status==='sold'?'#dc2626':'#2563eb';
+
+  // Generate features based on type
+  const features=[];
+  if(p.type==='stan'){features.push({i:'🏢',t:'Tip',v:'Stan'},{i:'🛏️',t:'Sobe',v:p.rooms},{i:'📐',t:'Površina',v:p.size+' m²'},{i:'📍',t:'Lokacija',v:p.location},{i:'💰',t:'Cijena po m²',v:pricePerM2.toLocaleString('de-DE')+' KM'},{i:'🏗️',t:'Status',v:statusLabel});}
+  else if(p.type==='kuca'){features.push({i:'🏠',t:'Tip',v:'Kuća'},{i:'🛏️',t:'Sobe',v:p.rooms},{i:'📐',t:'Površina',v:p.size+' m²'},{i:'📍',t:'Lokacija',v:p.location},{i:'🚗',t:'Parking',v:'Da'},{i:'🌳',t:'Dvorište',v:'Da'});}
+  else{features.push({i:'🏛️',t:'Tip',v:typeLabels[p.type]},{i:'📐',t:'Površina',v:p.size+' m²'},{i:'🚪',t:'Prostorije',v:p.rooms},{i:'📍',t:'Lokacija',v:p.location},{i:'🚗',t:'Parking',v:'Moguć'},{i:'🏗️',t:'Status',v:statusLabel});}
+
+  // Amenities
+  const amenities=p.type==='stan'?['Centralno grijanje','Klima','Balkon','Lift','Parking','Internet','Interfon','Novi prozori']
+    :p.type==='kuca'?['Centralno grijanje','Garaža','Dvorište','Klima','Parking','Internet','Bazen (opc.)','Terasa']
+    :['Parking','Klima','Internet','Alarm sistem','Video nadzor','Centralno grijanje','Izlog','Magazin'];
+
+  document.getElementById('detail-modal-body').innerHTML=`
+    <div style="position:relative;height:clamp(240px,40vh,400px);border-radius:20px 20px 0 0;overflow:hidden">
+      <img src="${p.img}" alt="${p.title}" style="width:100%;height:100%;object-fit:cover"/>
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.4) 0%,transparent 30%,transparent 60%,rgba(0,0,0,0.7) 100%)"></div>
+      <button onclick="closeDetailModal()" style="position:absolute;top:16px;right:16px;width:40px;height:40px;border-radius:12px;border:none;background:rgba(0,0,0,0.5);backdrop-filter:blur(10px);color:#fff;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all 0.3s" onmouseover="this.style.background='rgba(239,68,68,0.8)'" onmouseout="this.style.background='rgba(0,0,0,0.5)'">✕</button>
+      <div style="position:absolute;top:16px;left:16px;display:flex;gap:8px">
+        <span style="padding:6px 14px;border-radius:30px;font-size:11px;font-weight:700;letter-spacing:0.5px;background:${statusColor};color:#fff;text-transform:uppercase">${statusLabel}</span>
+        <span style="padding:6px 14px;border-radius:30px;font-size:11px;font-weight:600;background:rgba(0,0,0,0.5);backdrop-filter:blur(10px);color:#fff">${typeLabels[p.type]||p.type}</span>
+      </div>
+      <div style="position:absolute;bottom:20px;left:24px;right:24px">
+        <div style="font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">📍 ${p.location}</div>
+        <h2 class="pf" style="font-size:clamp(22px,3.5vw,34px);color:#fff;font-weight:700;line-height:1.2;text-shadow:0 2px 20px rgba(0,0,0,0.5)">${p.title}</h2>
+      </div>
+    </div>
+
+    <div style="padding:28px 32px">
+      <!-- Price header -->
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;padding-bottom:24px;border-bottom:1px solid #e2e8f0;margin-bottom:24px">
+        <div>
+          <div style="font-size:11px;font-weight:600;color:#94a3b8;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px">Cijena</div>
+          <div style="font-size:clamp(26px,4vw,36px);font-weight:800;background:linear-gradient(90deg,#1e40af,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1">${p.price.toLocaleString('de-DE')} KM</div>
+          <div style="font-size:12px;color:#94a3b8;margin-top:4px">${pricePerM2.toLocaleString('de-DE')} KM/m²</div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <a href="tel:+38761391301" style="display:inline-flex;align-items:center;gap:8px;padding:12px 22px;background:linear-gradient(135deg,#1e40af,#3b82f6);color:#fff;border-radius:12px;font-weight:600;font-size:13px;box-shadow:0 6px 20px rgba(59,130,246,0.25);transition:all 0.3s" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 10px 30px rgba(59,130,246,0.4)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 6px 20px rgba(59,130,246,0.25)'">📞 Nazovi</a>
+          <a href="mailto:info@gigant.ba?subject=Upit: ${encodeURIComponent(p.title)}" style="display:inline-flex;align-items:center;gap:8px;padding:12px 22px;background:rgba(59,130,246,0.08);color:#1e40af;border:1px solid rgba(59,130,246,0.2);border-radius:12px;font-weight:600;font-size:13px;transition:all 0.3s" onmouseover="this.style.background='rgba(59,130,246,0.15)'" onmouseout="this.style.background='rgba(59,130,246,0.08)'">✉️ Email</a>
+        </div>
+      </div>
+
+      <!-- Description -->
+      ${p.desc?`<div style="margin-bottom:28px"><h3 style="font-size:11px;font-weight:700;color:#1e40af;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px">Opis</h3><p style="color:#475569;line-height:1.8;font-size:14px">${p.desc}. Ova nekretnina nudi idealan spoj komfora i funkcionalnosti, savršena lokacija u srcu ${p.location}-a. Sve potrebne usluge i infrastruktura u neposrednoj blizini.</p></div>`:''}
+
+      <!-- Features grid -->
+      <div style="margin-bottom:28px">
+        <h3 style="font-size:11px;font-weight:700;color:#1e40af;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px">Karakteristike</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px">
+          ${features.map(f=>`<div style="padding:14px;background:#f8faff;border:1px solid #e2e8f0;border-radius:12px;transition:all 0.3s" onmouseover="this.style.borderColor='rgba(59,130,246,0.3)';this.style.boxShadow='0 4px 15px rgba(59,130,246,0.08)'" onmouseout="this.style.borderColor='#e2e8f0';this.style.boxShadow='none'"><div style="font-size:22px;margin-bottom:6px">${f.i}</div><div style="font-size:10px;color:#94a3b8;font-weight:600;letter-spacing:0.5px;text-transform:uppercase">${f.t}</div><div style="font-size:14px;font-weight:700;color:#0f172a;margin-top:2px">${f.v}</div></div>`).join('')}
+        </div>
+      </div>
+
+      <!-- Amenities -->
+      <div style="margin-bottom:28px">
+        <h3 style="font-size:11px;font-weight:700;color:#1e40af;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px">Pogodnosti</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          ${amenities.map(a=>`<span style="padding:8px 14px;background:rgba(59,130,246,0.06);color:#1e40af;border:1px solid rgba(59,130,246,0.12);border-radius:20px;font-size:12px;font-weight:600">✓ ${a}</span>`).join('')}
+        </div>
+      </div>
+
+      <!-- Location -->
+      <div style="padding:20px;background:linear-gradient(135deg,rgba(59,130,246,0.04),rgba(30,64,175,0.02));border-radius:16px;border:1px solid rgba(59,130,246,0.1)">
+        <h3 style="font-size:11px;font-weight:700;color:#1e40af;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px">📍 Lokacija</h3>
+        <div style="font-size:15px;font-weight:700;color:#0f172a;margin-bottom:4px">${p.location}, Bosna i Hercegovina</div>
+        <div style="font-size:13px;color:#64748b;line-height:1.7">Odlična lokacija sa pristupom svim važnim sadržajima — škole, trgovine, javni prevoz, restorani i parkovi u neposrednoj blizini.</div>
+      </div>
+
+      <!-- CTA -->
+      <div style="margin-top:28px;padding:24px;background:linear-gradient(135deg,#0f172a,#1e40af);border-radius:16px;text-align:center;color:#fff">
+        <h4 style="font-size:16px;font-weight:700;margin-bottom:6px">Zainteresovani ste?</h4>
+        <p style="font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:16px">Kontaktirajte nas za zakazivanje obilaska i detaljne informacije</p>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+          <a href="tel:+38761391301" style="display:inline-flex;align-items:center;gap:8px;padding:13px 26px;background:#fff;color:#1e40af;border-radius:12px;font-weight:700;font-size:13px">📞 +387 61 391 301</a>
+          <a href="mailto:info@gigant.ba" style="display:inline-flex;align-items:center;gap:8px;padding:13px 26px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2);border-radius:12px;font-weight:600;font-size:13px">✉️ info@gigant.ba</a>
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('detail-modal').style.display='flex';
+  document.body.style.overflow='hidden';
+  setTimeout(()=>document.getElementById('detail-modal-content').style.transform='scale(1) translateY(0)',10);
+}
+
+function closeDetailModal(){
+  document.getElementById('detail-modal-content').style.transform='scale(0.95) translateY(20px)';
+  setTimeout(()=>{document.getElementById('detail-modal').style.display='none';document.body.style.overflow='';},300);
 }
 
 // ── NAV SCROLL ──
@@ -540,8 +650,14 @@ const observer=new IntersectionObserver((entries)=>{
 },{threshold:0.1});
 document.querySelectorAll('.svc-card,.team-card,.stat-card').forEach(el=>{el.style.opacity='0';observer.observe(el);});
 
-// ── SECRET ADMIN: Ctrl+Shift+G ──
+// ── KEYBOARD HANDLERS ──
 document.addEventListener('keydown',e=>{
+  // Close detail modal on Escape
+  if(e.key==='Escape'){
+    if(document.getElementById('detail-modal').style.display==='flex')closeDetailModal();
+    document.getElementById('admin-gate').style.display='none';
+  }
+  // Secret admin access: Ctrl+Shift+G
   if(e.ctrlKey&&e.shiftKey&&e.key==='G'){
     e.preventDefault();
     document.getElementById('admin-gate').style.display='flex';
