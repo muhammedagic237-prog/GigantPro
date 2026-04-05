@@ -252,7 +252,7 @@
       <div class="search-grid" style="display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end">
         <div>
           <label style="font-size:10px;font-weight:700;color:#94a3b8;letter-spacing:1.5px;display:block;margin-bottom:6px">LOKACIJA</label>
-          <input type="text" class="s-input" placeholder="Sarajevo, Ilidža..." id="search-location"/>
+          <input type="text" class="s-input" placeholder="Sarajevo, Grbavica, Čengić Vila..." id="search-location" onkeydown="if(event.key==='Enter')filterProperties()"/>
         </div>
         <div>
           <label style="font-size:10px;font-weight:700;color:#94a3b8;letter-spacing:1.5px;display:block;margin-bottom:6px">TIP NEKRETNINE</label>
@@ -499,12 +499,16 @@ function setFilter(f){
 }
 
 function filterProperties(){
-  const loc=document.getElementById('search-location').value.toLowerCase();
+  const q=document.getElementById('search-location').value.toLowerCase().trim();
   const type=document.getElementById('search-type').value;
   const filtered=properties.filter(p=>{
     if(p.status==='sold')return false;
-    if(loc&&!p.location.toLowerCase().includes(loc))return false;
     if(type&&p.type!==type)return false;
+    if(q){
+      // Search across title, location, AND description
+      const haystack=(p.title+' '+p.location+' '+(p.desc||'')).toLowerCase();
+      if(!haystack.includes(q))return false;
+    }
     return true;
   });
   renderProperties(filtered);
