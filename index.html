@@ -130,73 +130,71 @@
 </head>
 <body>
 
-<!-- PREMIUM CINEMATIC SPLASH -->
-<div id="splash" style="position:fixed;inset:0;z-index:10000;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(ellipse at center,#0a1628 0%,#030712 70%,#000 100%);perspective:1200px">
+<!-- PREMIUM CINEMATIC SPLASH — white / cyan / black -->
+<div id="splash" style="position:fixed;inset:0;z-index:10000;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(ellipse at center,#050810 0%,#000 70%,#000 100%);perspective:1200px">
 
-  <!-- Ambient atmospheric glow -->
-  <div style="position:absolute;top:50%;left:50%;width:900px;height:900px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,0.06) 0%,rgba(30,64,175,0.03) 30%,transparent 60%);pointer-events:none"></div>
+  <!-- Cyan atmospheric glow -->
+  <div style="position:absolute;top:50%;left:50%;width:1100px;height:1100px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(6,182,212,0.08) 0%,rgba(8,145,178,0.04) 30%,transparent 60%);pointer-events:none"></div>
 
-  <!-- Expanding rings (ripple effect behind text) -->
-  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:200px;height:200px;border-radius:50%;border:1px solid rgba(59,130,246,0.3);animation:ringExpand 2.5s ease-out 1.4s infinite;pointer-events:none"></div>
-  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:200px;height:200px;border-radius:50%;border:1px solid rgba(96,165,250,0.25);animation:ringExpand 2.5s ease-out 1.8s infinite;pointer-events:none"></div>
-  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:200px;height:200px;border-radius:50%;border:1px solid rgba(147,197,253,0.2);animation:ringExpand 2.5s ease-out 2.2s infinite;pointer-events:none"></div>
+  <!-- Expanding cyan rings -->
+  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:240px;height:240px;border-radius:50%;border:1px solid rgba(6,182,212,0.35);animation:ringExpand 3s ease-out 1.6s infinite;pointer-events:none"></div>
+  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:240px;height:240px;border-radius:50%;border:1px solid rgba(34,211,238,0.28);animation:ringExpand 3s ease-out 2.2s infinite;pointer-events:none"></div>
+  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:240px;height:240px;border-radius:50%;border:1px solid rgba(165,243,252,0.22);animation:ringExpand 3s ease-out 2.8s infinite;pointer-events:none"></div>
 
-  <!-- Vertical light beams -->
-  <div style="position:absolute;top:0;left:15%;width:1px;height:100%;background:linear-gradient(180deg,transparent,rgba(59,130,246,0.3),transparent);transform-origin:top;animation:verticalBeam 2.5s ease-out 0.2s forwards"></div>
-  <div style="position:absolute;top:0;left:30%;width:1px;height:100%;background:linear-gradient(180deg,transparent,rgba(96,165,250,0.2),transparent);transform-origin:top;animation:verticalBeam 2.5s ease-out 0.4s forwards"></div>
-  <div style="position:absolute;top:0;left:70%;width:1px;height:100%;background:linear-gradient(180deg,transparent,rgba(96,165,250,0.2),transparent);transform-origin:top;animation:verticalBeam 2.5s ease-out 0.5s forwards"></div>
-  <div style="position:absolute;top:0;left:85%;width:1px;height:100%;background:linear-gradient(180deg,transparent,rgba(59,130,246,0.3),transparent);transform-origin:top;animation:verticalBeam 2.5s ease-out 0.3s forwards"></div>
+  <!-- Vertical cyan beams -->
+  <div style="position:absolute;top:0;left:12%;width:1px;height:100%;background:linear-gradient(180deg,transparent,rgba(6,182,212,0.35),transparent);transform-origin:top;animation:verticalBeam 3s ease-out 0.2s forwards"></div>
+  <div style="position:absolute;top:0;left:28%;width:1px;height:100%;background:linear-gradient(180deg,transparent,rgba(255,255,255,0.18),transparent);transform-origin:top;animation:verticalBeam 3s ease-out 0.4s forwards"></div>
+  <div style="position:absolute;top:0;right:28%;width:1px;height:100%;background:linear-gradient(180deg,transparent,rgba(255,255,255,0.18),transparent);transform-origin:top;animation:verticalBeam 3s ease-out 0.5s forwards"></div>
+  <div style="position:absolute;top:0;right:12%;width:1px;height:100%;background:linear-gradient(180deg,transparent,rgba(6,182,212,0.35),transparent);transform-origin:top;animation:verticalBeam 3s ease-out 0.3s forwards"></div>
 
-  <!-- Rising dust/sparkle particles -->
+  <!-- Rising sparkle particles -->
   <div id="splash-particles" style="position:absolute;inset:0;pointer-events:none"></div>
 
-  <!-- Top border line -->
-  <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(59,130,246,0.4),transparent);transform-origin:center;animation:lineDraw 1.2s cubic-bezier(0.16,1,0.3,1) 0.3s forwards;transform:scaleX(0)"></div>
+  <!-- Top & bottom white border lines -->
+  <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),rgba(6,182,212,0.5),rgba(255,255,255,0.4),transparent);transform-origin:center;animation:lineDraw 1.4s cubic-bezier(0.16,1,0.3,1) 0.3s forwards;transform:scaleX(0)"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),rgba(6,182,212,0.5),rgba(255,255,255,0.4),transparent);transform-origin:center;animation:lineDraw 1.4s cubic-bezier(0.16,1,0.3,1) 0.3s forwards;transform:scaleX(0)"></div>
 
-  <!-- Bottom border line -->
-  <div style="position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(59,130,246,0.4),transparent);transform-origin:center;animation:lineDraw 1.2s cubic-bezier(0.16,1,0.3,1) 0.3s forwards;transform:scaleX(0)"></div>
+  <!-- Top brand marker -->
+  <div style="position:absolute;top:46px;left:50%;transform:translateX(-50%);font-size:10px;letter-spacing:8px;color:rgba(165,243,252,0.5);font-weight:500;opacity:0;animation:fadeIn 0.8s ease-out 0.4s forwards;text-transform:uppercase">◆ EST. 2022 ◆</div>
 
-  <!-- Small brand marker at top -->
-  <div style="position:absolute;top:40px;left:50%;transform:translateX(-50%);font-size:9px;letter-spacing:6px;color:rgba(147,197,253,0.4);font-weight:500;opacity:0;animation:fadeIn 0.8s ease-out 0.4s forwards;text-transform:uppercase">◆ EST. 2022 ◆</div>
-
-  <!-- Logo centered -->
-  <div style="position:relative;z-index:2;opacity:0;animation:splashLogoIn 1.4s cubic-bezier(0.16,1,0.3,1) 0.3s forwards;margin-bottom:30px">
-    <img src="logos/Gigant-logo.png" alt="Gigant" style="height:70px;filter:brightness(2.5) drop-shadow(0 8px 30px rgba(59,130,246,0.4))"/>
+  <!-- ORIGINAL GIGANT LOGO — 70% bigger, stays entire splash -->
+  <div style="position:relative;z-index:2;opacity:0;animation:splashLogoIn 1.4s cubic-bezier(0.16,1,0.3,1) 0.3s forwards;margin-bottom:36px">
+    <img src="logos/Gigant-logo.png" alt="Gigant" style="height:clamp(140px,22vw,220px);filter:drop-shadow(0 12px 40px rgba(6,182,212,0.45)) drop-shadow(0 0 25px rgba(255,255,255,0.15))"/>
   </div>
 
-  <!-- GIGANT letters — each animates individually -->
-  <div style="position:relative;z-index:2;display:flex;gap:0;font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(56px,13vw,120px);line-height:1;perspective:800px;transform-style:preserve-3d" id="gigant-letters">
-    <span style="display:inline-block;opacity:0;animation:letterDrop 0.9s cubic-bezier(0.34,1.56,0.64,1) 0.5s forwards;background:linear-gradient(180deg,#ffffff 0%,#cbd5e1 45%,#ffffff 55%,#64748b 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 4px 30px rgba(59,130,246,0.35)) drop-shadow(0 0 15px rgba(255,255,255,0.1));margin-right:0.08em">G</span>
-    <span style="display:inline-block;opacity:0;animation:letterDrop 0.9s cubic-bezier(0.34,1.56,0.64,1) 0.63s forwards;background:linear-gradient(180deg,#ffffff 0%,#cbd5e1 45%,#ffffff 55%,#64748b 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 4px 30px rgba(59,130,246,0.35)) drop-shadow(0 0 15px rgba(255,255,255,0.1));margin-right:0.08em">I</span>
-    <span style="display:inline-block;opacity:0;animation:letterDrop 0.9s cubic-bezier(0.34,1.56,0.64,1) 0.76s forwards;background:linear-gradient(180deg,#ffffff 0%,#cbd5e1 45%,#ffffff 55%,#64748b 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 4px 30px rgba(59,130,246,0.35)) drop-shadow(0 0 15px rgba(255,255,255,0.1));margin-right:0.08em">G</span>
-    <span style="display:inline-block;opacity:0;animation:letterDrop 0.9s cubic-bezier(0.34,1.56,0.64,1) 0.89s forwards;background:linear-gradient(180deg,#ffffff 0%,#cbd5e1 45%,#ffffff 55%,#64748b 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 4px 30px rgba(59,130,246,0.35)) drop-shadow(0 0 15px rgba(255,255,255,0.1));margin-right:0.08em">A</span>
-    <span style="display:inline-block;opacity:0;animation:letterDrop 0.9s cubic-bezier(0.34,1.56,0.64,1) 1.02s forwards;background:linear-gradient(180deg,#ffffff 0%,#cbd5e1 45%,#ffffff 55%,#64748b 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 4px 30px rgba(59,130,246,0.35)) drop-shadow(0 0 15px rgba(255,255,255,0.1));margin-right:0.08em">N</span>
-    <span style="display:inline-block;opacity:0;animation:letterDrop 0.9s cubic-bezier(0.34,1.56,0.64,1) 1.15s forwards;background:linear-gradient(180deg,#ffffff 0%,#cbd5e1 45%,#ffffff 55%,#64748b 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 4px 30px rgba(59,130,246,0.35)) drop-shadow(0 0 15px rgba(255,255,255,0.1))">T</span>
+  <!-- GIGANT letters — white metallic gradient -->
+  <div style="position:relative;z-index:2;display:flex;gap:0;font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(52px,11vw,100px);line-height:1;perspective:800px;transform-style:preserve-3d">
+    <span style="display:inline-block;opacity:0;animation:letterDrop 0.9s cubic-bezier(0.34,1.56,0.64,1) 0.5s forwards;background:linear-gradient(180deg,#ffffff 0%,#e0f2fe 40%,#ffffff 55%,#67e8f9 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 4px 30px rgba(6,182,212,0.4)) drop-shadow(0 0 15px rgba(255,255,255,0.15));margin-right:0.08em">G</span>
+    <span style="display:inline-block;opacity:0;animation:letterDrop 0.9s cubic-bezier(0.34,1.56,0.64,1) 0.63s forwards;background:linear-gradient(180deg,#ffffff 0%,#e0f2fe 40%,#ffffff 55%,#67e8f9 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 4px 30px rgba(6,182,212,0.4)) drop-shadow(0 0 15px rgba(255,255,255,0.15));margin-right:0.08em">I</span>
+    <span style="display:inline-block;opacity:0;animation:letterDrop 0.9s cubic-bezier(0.34,1.56,0.64,1) 0.76s forwards;background:linear-gradient(180deg,#ffffff 0%,#e0f2fe 40%,#ffffff 55%,#67e8f9 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 4px 30px rgba(6,182,212,0.4)) drop-shadow(0 0 15px rgba(255,255,255,0.15));margin-right:0.08em">G</span>
+    <span style="display:inline-block;opacity:0;animation:letterDrop 0.9s cubic-bezier(0.34,1.56,0.64,1) 0.89s forwards;background:linear-gradient(180deg,#ffffff 0%,#e0f2fe 40%,#ffffff 55%,#67e8f9 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 4px 30px rgba(6,182,212,0.4)) drop-shadow(0 0 15px rgba(255,255,255,0.15));margin-right:0.08em">A</span>
+    <span style="display:inline-block;opacity:0;animation:letterDrop 0.9s cubic-bezier(0.34,1.56,0.64,1) 1.02s forwards;background:linear-gradient(180deg,#ffffff 0%,#e0f2fe 40%,#ffffff 55%,#67e8f9 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 4px 30px rgba(6,182,212,0.4)) drop-shadow(0 0 15px rgba(255,255,255,0.15));margin-right:0.08em">N</span>
+    <span style="display:inline-block;opacity:0;animation:letterDrop 0.9s cubic-bezier(0.34,1.56,0.64,1) 1.15s forwards;background:linear-gradient(180deg,#ffffff 0%,#e0f2fe 40%,#ffffff 55%,#67e8f9 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 4px 30px rgba(6,182,212,0.4)) drop-shadow(0 0 15px rgba(255,255,255,0.15))">T</span>
   </div>
 
   <!-- Light sweep across text -->
-  <div style="position:absolute;top:50%;left:0;right:0;height:clamp(80px,15vw,150px);margin-top:-30px;overflow:hidden;pointer-events:none;z-index:3">
-    <div style="position:absolute;top:0;left:0;width:30%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.25) 50%,transparent);animation:lightSweep 2s cubic-bezier(0.4,0,0.2,1) 1.6s forwards;transform:translateX(-100%)"></div>
+  <div style="position:absolute;top:55%;left:0;right:0;height:clamp(70px,13vw,130px);overflow:hidden;pointer-events:none;z-index:3">
+    <div style="position:absolute;top:0;left:0;width:30%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3) 50%,transparent);animation:lightSweep 2.2s cubic-bezier(0.4,0,0.2,1) 1.6s forwards;transform:translateX(-100%)"></div>
   </div>
 
-  <!-- Horizontal accent lines flanking "nekretnine" -->
+  <!-- Horizontal cyan accent lines flanking "nekretnine" -->
   <div style="position:relative;z-index:2;display:flex;align-items:center;gap:16px;margin-top:22px">
-    <div style="width:40px;height:1px;background:linear-gradient(90deg,transparent,rgba(147,197,253,0.6));transform-origin:right;animation:lineDraw 0.8s cubic-bezier(0.16,1,0.3,1) 1.9s forwards;transform:scaleX(0)"></div>
-    <div style="font-family:'Inter',sans-serif;font-weight:300;font-size:clamp(13px,2.2vw,20px);color:rgba(147,197,253,0.8);letter-spacing:14px;text-transform:lowercase;opacity:0;animation:subtitleFade 1s cubic-bezier(0.16,1,0.3,1) 1.7s forwards">nekretnine</div>
-    <div style="width:40px;height:1px;background:linear-gradient(90deg,rgba(147,197,253,0.6),transparent);transform-origin:left;animation:lineDraw 0.8s cubic-bezier(0.16,1,0.3,1) 1.9s forwards;transform:scaleX(0)"></div>
+    <div style="width:50px;height:1px;background:linear-gradient(90deg,transparent,rgba(6,182,212,0.7));transform-origin:right;animation:lineDraw 0.8s cubic-bezier(0.16,1,0.3,1) 1.9s forwards;transform:scaleX(0)"></div>
+    <div style="font-family:'Inter',sans-serif;font-weight:300;font-size:clamp(13px,2.2vw,20px);color:rgba(255,255,255,0.85);letter-spacing:14px;text-transform:lowercase;opacity:0;animation:subtitleFade 1s cubic-bezier(0.16,1,0.3,1) 1.7s forwards">nekretnine</div>
+    <div style="width:50px;height:1px;background:linear-gradient(90deg,rgba(6,182,212,0.7),transparent);transform-origin:left;animation:lineDraw 0.8s cubic-bezier(0.16,1,0.3,1) 1.9s forwards;transform:scaleX(0)"></div>
   </div>
 
-  <!-- Tagline with separator dots -->
-  <div style="position:relative;z-index:2;font-family:'Inter',sans-serif;font-weight:300;font-size:10px;color:rgba(148,163,184,0.5);letter-spacing:5px;text-transform:uppercase;margin-top:24px;opacity:0;animation:fadeIn 0.8s ease-out 2.3s forwards;display:flex;align-items:center;gap:10px">
+  <!-- Tagline with cyan separator dots -->
+  <div style="position:relative;z-index:2;font-family:'Inter',sans-serif;font-weight:300;font-size:10px;color:rgba(255,255,255,0.5);letter-spacing:5px;text-transform:uppercase;margin-top:24px;opacity:0;animation:fadeIn 0.8s ease-out 2.3s forwards;display:flex;align-items:center;gap:10px">
     <span>PREMIUM REAL ESTATE</span>
-    <span style="width:3px;height:3px;border-radius:50%;background:rgba(59,130,246,0.6)"></span>
+    <span style="width:4px;height:4px;border-radius:50%;background:#06b6d4;box-shadow:0 0 8px rgba(6,182,212,0.6)"></span>
     <span>SARAJEVO</span>
-    <span style="width:3px;height:3px;border-radius:50%;background:rgba(59,130,246,0.6)"></span>
+    <span style="width:4px;height:4px;border-radius:50%;background:#06b6d4;box-shadow:0 0 8px rgba(6,182,212,0.6)"></span>
     <span>EST. 2022</span>
   </div>
 
   <!-- Bottom signature -->
-  <div style="position:absolute;bottom:40px;left:50%;transform:translateX(-50%);font-family:'Inter',sans-serif;font-size:8px;color:rgba(148,163,184,0.25);letter-spacing:4px;font-weight:500;opacity:0;animation:fadeIn 0.6s ease-out 2.8s forwards;text-transform:uppercase">◆ Bosnia &amp; Herzegovina ◆</div>
+  <div style="position:absolute;bottom:46px;left:50%;transform:translateX(-50%);font-family:'Inter',sans-serif;font-size:9px;color:rgba(165,243,252,0.3);letter-spacing:5px;font-weight:500;opacity:0;animation:fadeIn 0.6s ease-out 2.8s forwards;text-transform:uppercase">◆ Bosnia &amp; Herzegovina ◆</div>
 </div>
 
 <!-- NAVIGATION -->
@@ -456,12 +454,15 @@
 // ── SPLASH ──
 const splashEl=document.getElementById('splash');
 const pCont=document.getElementById('splash-particles');
-// Rising dust/sparkle particles for cinematic feel
-for(let i=0;i<35;i++){
+// Rising white/cyan sparkle particles
+for(let i=0;i<40;i++){
   const d=document.createElement('div');
   const size=1+Math.random()*3;
-  const opacity=0.3+Math.random()*0.5;
-  d.style.cssText=`position:absolute;left:${Math.random()*100}%;bottom:${Math.random()*60}%;width:${size}px;height:${size}px;border-radius:50%;background:rgba(147,197,253,${opacity});box-shadow:0 0 ${size*3}px rgba(59,130,246,0.5);animation:dustRise ${4+Math.random()*4}s ease-out ${Math.random()*3}s infinite`;
+  const opacity=0.4+Math.random()*0.5;
+  const isCyan=Math.random()>0.5;
+  const color=isCyan?`rgba(103,232,249,${opacity})`:`rgba(255,255,255,${opacity})`;
+  const glow=isCyan?'rgba(6,182,212,0.6)':'rgba(255,255,255,0.4)';
+  d.style.cssText=`position:absolute;left:${Math.random()*100}%;bottom:${Math.random()*60}%;width:${size}px;height:${size}px;border-radius:50%;background:${color};box-shadow:0 0 ${size*4}px ${glow};animation:dustRise ${4+Math.random()*4}s ease-out ${Math.random()*3}s infinite`;
   pCont.appendChild(d);
 }
 // Extended cinematic duration: 4.2s total
