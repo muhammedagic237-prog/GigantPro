@@ -501,18 +501,33 @@ function setFilter(f){
 function filterProperties(){
   const q=document.getElementById('search-location').value.toLowerCase().trim();
   const type=document.getElementById('search-type').value;
+
+  // Sync the filter chip to match the search type (or "Sve" if no type)
+  currentFilter=type||'all';
+  document.querySelectorAll('.fbtn').forEach(b=>{
+    const label=b.textContent.trim();
+    const match=(currentFilter==='all'&&label==='Sve')||(currentFilter==='stan'&&label==='Stanovi')||(currentFilter==='kuca'&&label==='Kuće')||(currentFilter==='poslovni'&&label==='Poslovni');
+    b.classList.toggle('active',match);
+  });
+
+  // Build filtered list
   const filtered=properties.filter(p=>{
     if(p.status==='sold')return false;
     if(type&&p.type!==type)return false;
     if(q){
-      // Search across title, location, AND description
       const haystack=(p.title+' '+p.location+' '+(p.desc||'')).toLowerCase();
       if(!haystack.includes(q))return false;
     }
     return true;
   });
+
+  // Render then scroll with nav offset
   renderProperties(filtered);
-  document.getElementById('nekretnine').scrollIntoView({behavior:'smooth'});
+  setTimeout(()=>{
+    const target=document.getElementById('nekretnine');
+    const navHeight=72;
+    window.scrollTo({top:target.offsetTop-navHeight,behavior:'smooth'});
+  },50);
 }
 
 function renderProperties(list){
